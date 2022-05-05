@@ -4,6 +4,9 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+var jwt = require('jsonwebtoken');
+
+
 const app = express();
 
 app.use(cors());
@@ -40,12 +43,20 @@ async function run(){
             res.send(result)
         })
 
+        app.post('/login', (req, res) => {
+            const email = req.body;
+            var token = jwt.sign(email, process.env.USER_TOKEN);
+            res.send({token})
+            console.log(token);
+        })
+
         app.delete('/books/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id:ObjectId(id)}
             const result = await booksCollection.deleteOne(query)
-            res.send(result)
+            res.send({success: 'successfully added'})
         })
+
     }
     finally{
 
