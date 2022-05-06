@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 
-
+// Connect mongodb
 const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.USER_PASS}@cluster0.hayv0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -21,6 +21,7 @@ async function run() {
         await client.connect();
         const booksCollection = client.db('book-stock-manager').collection('book-stock');
 
+        //for showing to UI
         app.get('/books', async (req, res) => {
             const query = {};
             const cursor = booksCollection.find(query)
@@ -28,6 +29,7 @@ async function run() {
             res.send(books)
         });
 
+        // get books by id
         app.get('/books/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -35,12 +37,14 @@ async function run() {
             res.send(books)
         })
 
+        // create product
         app.post('/books', async (req, res) => {
             const newBook = req.body;
             const result = await booksCollection.insertOne(newBook)
             res.send(result)
         })
 
+        // delete products
         app.delete('/books/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -54,3 +58,12 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
+
+app.get('/', (req, res) => {
+    res.send('Running book stock manager')
+})
+
+app.listen(port, () => {
+    console.log('Listening to port', port);
+})
