@@ -52,10 +52,6 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/hero', (req, res) => {
-            res.send('hero')
-        })
-
     }
     finally {
 
